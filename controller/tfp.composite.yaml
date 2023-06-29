@@ -1,0 +1,53 @@
+---
+apiVersion: metacontroller.k8s.io/v1alpha1
+kind: CompositeController
+metadata:
+  name: tfproject-controller
+spec:
+  generateSelector: true
+  parentResource:
+    apiVersion: terraform.iac.operator/v1
+    resource: tfprojects
+  childResources:
+    - apiVersion: v1
+      resource: pods
+  hooks:
+    sync:
+      webhook:
+        url: http://tfproject-controller.default.svc.cluster.local/sync
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tfproject-controller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tfproject-controller
+  template:
+    metadata:
+      labels:
+        app: tfproject-controller
+    spec:
+      containers:
+      - name: controller
+        image: python:3.10
+        command: ["python", "/hooks/main.py"]
+        volumeMounts:
+        - name: hooks
+          mountPath: /hooks
+      volumes:
+      - name: hooks
+        configMap:
+          name: tfproject-controller
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tfproject-controller
+spec:
+  selector:
+    app: tfproject-controller
+  ports:
+  - port: 80

@@ -1,7 +1,7 @@
 apiVersion: "terraform.iac.operator/v1"
 kind: TfProject
 metadata:
-  name: random-pet
+  name: ronaldo-tfp
 spec:
   path: "terraform/"
   repository: "blabla.com/bla"

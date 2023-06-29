@@ -7,14 +7,15 @@ class Controller(BaseHTTPRequestHandler):
     desired_status = {
       "pods": len(children["Pod.v1"])
     }
-    name = parent["metadata"]["name"]
+
     # Generate the desired child object(s).
-    desired_manifests = [
+    who = parent.get("spec", {}).get("who", "World")
+    desired_pods = [
       {
         "apiVersion": "v1",
         "kind": "Pod",
         "metadata": {
-          "name": name
+          "name": parent["metadata"]["name"]
         },
         "spec": {
           "restartPolicy": "OnFailure",
@@ -22,14 +23,14 @@ class Controller(BaseHTTPRequestHandler):
             {
               "name": "hello",
               "image": "busybox",
-              "command": ["echo", "Hello, %s!" % name]
+              "command": ["echo", "Hello, %s!" % who]
             }
           ]
         }
       }
     ]
 
-    return {"status": desired_status, "children": desired_manifests}
+    return {"status": desired_status, "children": desired_pods}
 
   def do_POST(self):
     # Serve the sync() function as a JSON webhook.
