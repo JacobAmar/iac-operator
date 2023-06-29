@@ -11,6 +11,8 @@ spec:
   childResources:
     - apiVersion: v1
       resource: pods
+    - apiVersion: v1
+      resource: configmaps
   hooks:
     sync:
       webhook:
