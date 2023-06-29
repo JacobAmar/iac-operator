@@ -8,25 +8,64 @@ class Controller(BaseHTTPRequestHandler):
       "pods": len(children["Pod.v1"])
     }
     name = parent["metadata"]["name"]
+    repository = parent["spec"]["repository"]
+    path = parent["spec"]["path"]
     # Generate the desired child object(s).
     desired_manifests = [
-      {
-        "apiVersion": "v1",
-        "kind": "Pod",
-        "metadata": {
-          "name": name
-        },
-        "spec": {
-          "restartPolicy": "OnFailure",
-          "containers": [
-            {
-              "name": "hello",
-              "image": "busybox",
-              "command": ["echo", "Hello, %s!" % name]
-            }
-          ]
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "labels": {
+              "run": f"{name}-terraform-plan"
+            },
+            "name": f"{name}-terraform-plan"
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "hashicorp/terraform:1.5",
+                "name": f"{name}-terraform-plan",
+                "command": [
+                  "/bin/sh",
+                  "-c",
+                  f"cd /data\nls -la\ncd {path}\n cat main.tf"
+                ],
+                "volumeMounts": [
+                  {
+                    "mountPath": "/data",
+                    "name": "terraform-dir"
+                  }
+                ]
+              }
+            ],
+            "initContainers": [
+              {
+                "name": "git-cloner",
+                "image": "alpine/git",
+                "args": [
+                  "clone",
+                  "--single-branch",
+                  "--",
+                  repository,
+                  "/data"
+                ],
+                "volumeMounts": [
+                  {
+                    "mountPath": "/data",
+                    "name": "terraform-dir"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "terraform-dir",
+                "emptyDir": {}
+              }
+            ]
+          }
         }
-      }
     ]
 
     return {"status": desired_status, "children": desired_manifests}

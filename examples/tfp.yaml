@@ -3,8 +3,8 @@ kind: TfProject
 metadata:
   name: ronaldo-tfp
 spec:
-  path: "terraform/"
-  repository: "blabla.com/bla"
+  path: "terraform"
+  repository: "https://github.com/JacobAmar/iac-operator"
   backend: dev
   interval: 30
   variables:
