@@ -1,6 +1,16 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 
+def gen_vars(vars):
+    """
+    vars is the variables map in the spec section
+    """
+    result = {}
+    for key,value in vars.items():
+        tf_var_name = f"TF_VAR_{key}"
+        result[tf_var_name] = value
+    return result
+
 class Controller(BaseHTTPRequestHandler):
   def sync(self, parent, children):
     # Compute status based on observed state.
@@ -10,6 +20,8 @@ class Controller(BaseHTTPRequestHandler):
     name = parent["metadata"]["name"]
     repository = parent["spec"]["repository"]
     path = parent["spec"]["path"]
+    variables = parent["spec"]["variables"]
+
     # Generate the desired child object(s).
     desired_manifests = [
         {
@@ -29,7 +41,14 @@ class Controller(BaseHTTPRequestHandler):
                 "command": [
                   "/bin/sh",
                   "-c",
-                  f"cd /data\nls -la\ncd {path}\n cat main.tf"
+                  f"cd /data\nls -la\ncd {path}\n terraform init"
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": f"{name}-tf-variables"
+                    }
+                  }
                 ],
                 "volumeMounts": [
                   {
@@ -65,8 +84,17 @@ class Controller(BaseHTTPRequestHandler):
               }
             ]
           }
+        },
+        {
+          "apiVersion": "v1",
+          "kind": "ConfigMap",
+          "metadata": {
+            "name": f"{name}-tf-variables"
+          },
+          "data": gen_vars(variables)
         }
     ]
+
 
     return {"status": desired_status, "children": desired_manifests}
 
