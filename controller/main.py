@@ -41,7 +41,7 @@ class Controller(BaseHTTPRequestHandler):
                 "command": [
                   "/bin/sh",
                   "-c",
-                  f"cd /data\nls -la\ncd {path}\n terraform init"
+                  f"cd /data\nls -la\ncd {path}\n terraform init\n terraform plan -input=false -out tfplan\n "
                 ],
                 "envFrom": [
                   {
