@@ -36,12 +36,26 @@ class Controller(BaseHTTPRequestHandler):
           "spec": {
             "containers": [
               {
-                "image": "hashicorp/terraform:1.5",
+                "image": "ttl.sh/iac-operator-8179:1h",
                 "name": f"{name}-terraform-plan",
                 "command": [
                   "/bin/sh",
-                  "-c",
-                  f"cd /data\nls -la\ncd {path}\n terraform init\n terraform plan -input=false -out tfplan\n "
+                  "plan.sh"
+                  #f"cd /data\nls -la\ncd {path}\n terraform init\n terraform plan -input=false -out tfplan\n "
+                ],
+                "env": [
+                  {
+                    "name": "TFDIR",
+                    "value": "iac-operator/terraform"
+                  },
+                  {
+                    "name": "NAME",
+                    "value": name
+                  },
+                  {
+                    "name": "REPO",
+                    "value": repository
+                  }
                 ],
                 "envFrom": [
                   {
@@ -49,25 +63,6 @@ class Controller(BaseHTTPRequestHandler):
                       "name": f"{name}-tf-variables"
                     }
                   }
-                ],
-                "volumeMounts": [
-                  {
-                    "mountPath": "/data",
-                    "name": "terraform-dir"
-                  }
-                ]
-              }
-            ],
-            "initContainers": [
-              {
-                "name": "git-cloner",
-                "image": "alpine/git",
-                "args": [
-                  "clone",
-                  "--single-branch",
-                  "--",
-                  repository,
-                  "/data"
                 ],
                 "volumeMounts": [
                   {
