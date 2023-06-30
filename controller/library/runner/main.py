@@ -19,7 +19,9 @@ def terraform_plan():
     to_add = result.group(1)
     to_change = result.group(2)
     to_destroy = result.group(3)
-    print([to_add,to_change,to_destroy])
+    # only apply if add / change / destroy is != to 0
+    if to_add != 0 or to_change !=0 or to_destroy != 0:
+        print("will run terraform apply")
 
 def main():
     os.chdir("../../../terraform")
