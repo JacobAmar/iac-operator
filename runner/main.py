@@ -5,6 +5,7 @@ config.load_kube_config()
 
 v1 = client.CoreV1Api()
 crd = client.CustomObjectsApi()
+#crd.list_cluster_custom_object('terraform.iac.operator','v1','tfprojects')
 watch = watch.Watch()
-for event in watch.stream(crd.list_cluster_custom_object,'terraform.iac.operator','v1','default','tfprojects'):
-    print(event)
+for event in watch.stream(crd.list_cluster_custom_object,'terraform.iac.operator','v1','tfprojects'):
+    print(event["object"])

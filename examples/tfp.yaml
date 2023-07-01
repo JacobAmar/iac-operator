@@ -5,7 +5,7 @@ metadata:
 spec:
   path: "terraform"
   repository: "https://github.com/JacobAmar/iac-operator"
-  backend: dev
+  backend: qa
   interval: 30
   variables:
     region: "us-east-1"
