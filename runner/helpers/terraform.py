@@ -24,8 +24,7 @@ def terraform_plan():
         print("will run terraform apply")
 
 def main():
-    os.chdir("../../../terraform")
+    #os.chdir("../../../terraform")
     #terraform_init()
     terraform_plan()
 
-main()
