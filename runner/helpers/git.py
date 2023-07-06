@@ -1,4 +1,4 @@
-from git import Repo, Head, Remote, repo
+from git import Repo, Head
 import os
 
 
@@ -11,9 +11,16 @@ def git_handler(repository,path,branch=None):
                 remote = repo.remote(name='origin')
                 if branch == None:
                     print(f"pulling changes for repo {repository}")
-                    remote.pull()
+                    pull = remote.pull()
+                    for change in pull:
+                          print(f"pulled changes for {change.name}")
                 else:
                       # checking out to the spesific branch address any changes on the branch name
-                      Head.checkout(path)
                       print(f"pulling changes for repo {repository}")
-                      remote.pull()
+                      for ref in remote.refs:
+                            if branch in ref.name:
+                                  # meaning, if the branch name is in the remote
+                                  print(f"branch found, {ref.name}")
+                                  remote.fetch()
+                                  ref.checkout()
+                                  #remote.pull()

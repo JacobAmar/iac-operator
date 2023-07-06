@@ -16,5 +16,5 @@ for event in watch.stream(crd.list_cluster_custom_object,'terraform.iac.operator
     repo_directory = "cloned"
     event_type = event["type"]
     if event_type == "ADDED":
-        git_handler(repository=repository,path=project_name)
+        git_handler(repository=repository,path=project_name,branch="init")
         print("done")
