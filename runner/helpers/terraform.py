@@ -15,16 +15,24 @@ def terraform_init():
 def terraform_plan():
     process = run_command(["terraform","plan","-input=false","-no-color","-out=tfplan"])
     # using regex to capture terraform changes
-    result = re.search("Plan:\s(\d).*(\d)\sto\schange.*(\d)\sto\sdestroy",process)
-    to_add = result.group(1)
-    to_change = result.group(2)
-    to_destroy = result.group(3)
     print(process)
-    # only apply if add / change / destroy is != to 0
-    if to_add != 0 or to_change !=0 or to_destroy != 0:
-        return True
+    result = re.search("Plan:\s(\d).*(\d)\sto\schange.*(\d)\sto\sdestroy",process)
+    if result != None:
+      to_add = result.group(1)
+      to_change = result.group(2)
+      to_destroy = result.group(3)
+      # only apply if add / change / destroy is != to 0
+      if to_add != 0 or to_change !=0 or to_destroy != 0:
+          return True
+      else:
+          return False
     else:
-        return False
+        # check if theres any changes to outputs:
+        result = re.search("Changes to Outputs:",process)
+        if result != None:
+            return True
+        else:
+            return False
 
 
 def terraform_apply():
@@ -32,6 +40,7 @@ def terraform_apply():
     print(process)
 
 def main(path,variables=None):
+    os.environ["TF_IN_AUTOMATION"] = "true"
     os.chdir(path)
     if variables != None:
         variables_json = json.dumps(variables)

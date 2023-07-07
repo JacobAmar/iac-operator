@@ -8,7 +8,9 @@ spec:
   backend: qa
   interval: 30
   variables:
-    region: "us-east-1"
+    region: "us-east-12"
     vpc_cidrs: {
-      "us-east-1a": "10.1.0.0/20"
+      "us-east-1a": "10.1.2.0/24",
+      "us-east-1b": "10.1.3.0/24",
+      "us-east-1c": "10.1.5.0/24"
     }

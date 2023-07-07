@@ -1,7 +1,7 @@
 apiVersion: "terraform.iac.operator/v1"
 kind: TfBackend
 metadata:
-  name: random-pet-backend
+  name: qa
 spec:
   type: "local"
   path: "terraform"
