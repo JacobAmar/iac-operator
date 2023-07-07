@@ -17,6 +17,6 @@ output "final" {
   value       = local.name
 }
 
-output "cidr_blocks" {
+output "cidr_block" {
   value       = local.cidr_blocks
 }
