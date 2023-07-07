@@ -9,3 +9,6 @@ spec:
   interval: 30
   variables:
     region: "us-east-1"
+    vpc_cidrs: {
+      "us-east-1a": "10.1.0.0/20"
+    }
